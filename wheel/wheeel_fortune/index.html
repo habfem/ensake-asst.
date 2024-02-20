@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Fortune</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #spinButton {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <script type="module">
+        import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r127/build/three.module.js';
+
+        // Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Wheel
+        const wheelTexture = new THREE.TextureLoader().load('../wheel.png');
+        const wheelGeometry = new THREE.PlaneGeometry(10, 10);
+        const wheelMaterial = new THREE.MeshBasicMaterial({ map: wheelTexture, side: THREE.DoubleSide });
+        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        scene.add(wheel);
+
+        // Marker
+        const markerTexture = new THREE.TextureLoader().load('../marker.png');
+        const markerGeometry = new THREE.PlaneGeometry(1, 1);
+        const markerMaterial = new THREE.MeshBasicMaterial({ map: markerTexture, transparent: true });
+        const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+        scene.add(marker);
+
+        // Camera position
+        camera.position.z = 10;
+
+        // Animation
+        let isSpinning = false;
+
+        const spinWheel = () => {
+            isSpinning = true;
+
+            // Generate a random spin time between 5 and 10 seconds
+            const spinTime = Math.random() * (10 - 5) + 5;
+
+            // Simulate spinning for the random spin time
+            setTimeout(() => {
+                isSpinning = false;
+            }, spinTime * 1000);
+        };
+
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            if (isSpinning) {
+                // Rotate the wheel
+                wheel.rotation.z += 0.01;
+            }
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        // Image-based button
+        const spinButton = document.createElement('img');
+        spinButton.id = 'spinButton';
+        spinButton.src = '../btn-spin.png';
+        spinButton.alt = 'Spin';
+        spinButton.addEventListener('click', spinWheel);
+        document.body.appendChild(spinButton);
+    </script>
+</body>
+</html>
